@@ -2,11 +2,10 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_USERNAME = credentials('iamakshayjagtap') // Jenkins credential ID
-        DOCKERHUB_PASSWORD = credentials('Asj@97662112') // Jenkins credential ID
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred')
         IMAGE_NAME = "devsecops-app"
         IMAGE_TAG  = "latest"
-        DOCKERHUB_REPO = "${DOCKERHUB_USERNAME}/${IMAGE_NAME}:${IMAGE_TAG}"
+        DOCKERHUB_REPO = "${DOCKERHUB_CREDENTIALS_USR}/${IMAGE_NAME}:${IMAGE_TAG}"
     }
 
     stages {
@@ -32,7 +31,7 @@ pipeline {
         stage('Docker Hub Login & Push') {
             steps {
                 sh """
-                echo "${DOCKERHUB_PASSWORD}" | docker login -u "${DOCKERHUB_USERNAME}" --password-stdin
+                echo "${DOCKERHUB_CREDENTIALS_PSW}" | docker login -u "${DOCKERHUB_CREDENTIALS_USR}" --password-stdin
                 docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKERHUB_REPO}
                 docker push ${DOCKERHUB_REPO}
                 """
@@ -48,7 +47,9 @@ pipeline {
 
     post {
         always {
-            sh 'docker logout'
+            node {
+                sh 'docker logout'
+            }
         }
         success {
             echo "Deployment Successful! 🚀"
