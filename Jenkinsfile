@@ -6,6 +6,7 @@ pipeline {
         IMAGE_NAME = "devsecops-app1"
         IMAGE_TAG  = "latest"
         DOCKERHUB_REPO = "${DOCKERHUB_CREDENTIALS_USR}/${IMAGE_NAME}:${IMAGE_TAG}"
+        KUBECONFIG_PATH = "/home/ubuntu/.kube/config" // Jenkins server kubeconfig path
     }
 
     stages {
@@ -30,25 +31,22 @@ pipeline {
 
         stage('Docker Hub Login & Push') {
             steps {
-                sh """
-                echo "${DOCKERHUB_CREDENTIALS_PSW}" | docker login -u "${DOCKERHUB_CREDENTIALS_USR}" --password-stdin
-                docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKERHUB_REPO}
-                docker push ${DOCKERHUB_REPO}
-                """
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-cred', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+                        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_USER}/${IMAGE_NAME}:${IMAGE_TAG}
+                        docker push ${DOCKER_USER}/${IMAGE_NAME}:${IMAGE_TAG}
+                    '''
+                }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                // Secret-based kubeconfig usage
-                withCredentials([string(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_CONTENT')]) {
-                    sh '''
-                    echo "$KUBECONFIG_CONTENT" > /tmp/kubeconfig
-                    export KUBECONFIG=/tmp/kubeconfig
+                sh '''
+                    export KUBECONFIG=${KUBECONFIG_PATH}
                     kubectl apply -f k8s/
-                    rm /tmp/kubeconfig
-                    '''
-                }
+                '''
             }
         }
     }
