@@ -12,7 +12,7 @@ pipeline {
 
         stage('Checkout Code') {
             steps {
-                checkout scm   // 
+                checkout scm
             }
         }
 
@@ -40,7 +40,15 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/'
+                // Secret-based kubeconfig usage
+                withCredentials([string(credentialsId: 'kubeconfig', variable: 'KUBECONFIG_CONTENT')]) {
+                    sh '''
+                    echo "$KUBECONFIG_CONTENT" > /tmp/kubeconfig
+                    export KUBECONFIG=/tmp/kubeconfig
+                    kubectl apply -f k8s/
+                    rm /tmp/kubeconfig
+                    '''
+                }
             }
         }
     }
