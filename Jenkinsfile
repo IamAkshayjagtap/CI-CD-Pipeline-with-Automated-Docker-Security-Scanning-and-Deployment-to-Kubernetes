@@ -6,7 +6,6 @@ pipeline {
         IMAGE_NAME = "devsecops-app1"
         IMAGE_TAG  = "latest"
         DOCKERHUB_REPO = "${DOCKERHUB_CREDENTIALS_USR}/${IMAGE_NAME}:${IMAGE_TAG}"
-        KUBECONFIG_PATH = "/home/ubuntu/.kube/config" // Jenkins server kubeconfig path
     }
 
     stages {
@@ -43,10 +42,12 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh '''
-                    export KUBECONFIG=${KUBECONFIG_PATH}
-                    kubectl apply -f k8s/
-                '''
+                // Use Jenkins secret file for kubeconfig
+                withCredentials([file(credentialsId: 'kubeconfig-secret', variable: 'KUBECONFIG')]) {
+                    sh '''
+                        kubectl apply -f k8s/
+                    '''
+                }
             }
         }
     }
