@@ -44,7 +44,7 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 // Use Jenkins secret file for kubeconfig
-                withCredentials([file(credentialsId: 'kubeconfig-file', variable: 'KUBECONFIG')]) {
+                withCredentials([file(credentialsId: 'kubeconfig', variable: 'KUBECONFIG')]) {
                     sh '''
                         kubectl apply -f k8s/
                         kubectl get pods
