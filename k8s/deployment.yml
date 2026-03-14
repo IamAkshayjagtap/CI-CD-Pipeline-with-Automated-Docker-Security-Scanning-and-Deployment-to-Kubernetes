@@ -14,6 +14,6 @@ spec:
     spec:
       containers:
       - name: devsecops-app
-        image: iamakshayjagtap/devsecops-app:latest
+        image: iamakshayjagtap/devsecops-app1:latest
         ports:
         - containerPort: 5000

@@ -1,16 +1,19 @@
-FROM python:3.9-slim
+FROM python:3.9-alpine
 
-ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
-COPY requirements.txt .
+RUN apk update && apk add --no-cache \
+    bash \
+    build-base \
+    libffi-dev \
+    openssl-dev \
+    && rm -rf /var/cache/apk/*
 
-RUN apt-get update && \
-    apt-get install -y --only-upgrade libc-bin libc6 libsystemd0 libudev1 openssl && \
-    pip install --no-cache-dir -r requirements.txt && \
-    pip install --upgrade wheel==0.46.3 jaraco.context==6.1.1 && \
-    apt-get clean && rm -rf /var/lib/apt/lists/*
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt \
+    && pip install --upgrade wheel==0.46.3 jaraco.context==6.1.1
 
 COPY app.py .
 
