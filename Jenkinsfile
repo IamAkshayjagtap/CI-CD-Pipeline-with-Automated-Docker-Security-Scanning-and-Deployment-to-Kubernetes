@@ -3,7 +3,7 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS = credentials('dockerhub-cred') // Jenkins Credentials ID
-        IMAGE_NAME = "devsecops-app"
+        IMAGE_NAME = "devsecops-app1"
         IMAGE_TAG  = "latest"
         DOCKERHUB_REPO = "${DOCKERHUB_CREDENTIALS_USR}/${IMAGE_NAME}:${IMAGE_TAG}"
     }
