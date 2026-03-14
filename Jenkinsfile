@@ -24,7 +24,8 @@ pipeline {
 
         stage('Trivy Security Scan') {
             steps {
-                sh "trivy image --exit-code 1 --severity HIGH,CRITICAL ${IMAGE_NAME}:${IMAGE_TAG} || true"
+                // HIGH/CRITICAL vulnerabilities warn but don't fail pipeline
+                sh "trivy image --exit-code 1 --severity HIGH,CRITICAL ${IMAGE_NAME}:${IMAGE_TAG} || echo 'Security scan completed with warnings'"
             }
         }
 
@@ -42,9 +43,12 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                // Use Jenkins secret file for kubeconfig
-                withCredentials([file(credentialsId: 'kubeconfig-secret', variable: 'KUBECONFIG')]) {
+                // Use Jenkins secret text for kubeconfig
+                withCredentials([string(credentialsId: 'kubeconfig-secret', variable: 'KUBECONFIG_CONTENT')]) {
                     sh '''
+                        # Create temporary kubeconfig file from Jenkins secret
+                        echo "$KUBECONFIG_CONTENT" > kubeconfig
+                        export KUBECONFIG=kubeconfig
                         kubectl apply -f k8s/
                     '''
                 }
