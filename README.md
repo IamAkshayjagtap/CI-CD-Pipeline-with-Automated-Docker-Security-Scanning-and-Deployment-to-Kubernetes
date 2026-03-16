@@ -33,33 +33,33 @@ This project implements a secure CI/CD pipeline using Jenkins, Docker, Trivy, an
 
 ---
 ## Screenshots:
-1. Instance Running
+**1. Instance Running:**
 ![Instance](images/Instance.png)
-2. Jenkins Pipeline Trigger  
+**2. Jenkins Pipeline Trigger:**  
 ![Jenkins Pipeline Trigger](images/trigger-pipeline.png)  
 
-3. Jenkins Pipeline Success  
+**3. Jenkins Pipeline Success:**  
 ![Pipeline Success](images/pipeline-run.png)  
 
-4. Jenkins Pipeline Failure  
+**4. Jenkins Pipeline Failure:**  
 ![Pipeline Failure](images/pipeline-fail.png)  
 
-5. Trivy Scan Report  
-run:
+**5. Trivy Scan Report:**  
+Run:
 ![Trivy Scan](images/trivy-1.png)  
-error:
+Failed:
 ![Trivy Scan](images/trivy-2.png)
 
-6. DockerHub Image Push  
+**6. DockerHub Image Push:**  
 ![DockerHub Push](images/docker-img.png)  
 
-7. Kubernetes Pods Status  
+**7. Kubernetes Pods Status:**  
 ![Kubernetes Pods](images/pod-status.png)  
 
-8. Kubernetes Services Status  
+**8. Kubernetes Services Status:**  
 ![Kubernetes Services](images/service-status.png)  
 
-9. Output  
+**9. Output:**  
 ![Output](images/Output.png)  
 
 ---
@@ -84,4 +84,6 @@ This project demonstrates **end-to-end CI/CD automation** with integrated securi
 
 Security gating, automated scanning, and controlled deployment ensure that **DevOps processes are secure, reliable, and efficient.**
 
+---
+### Author: Akshay Jagtap
 ---
